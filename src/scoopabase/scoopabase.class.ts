@@ -7,11 +7,10 @@ export class ScoopaBase {
   private _collectionDict: CollectionDictionary = {};
 
   constructor(name: string) {
-    LocalForage.setDriver(LocalForage.INDEXEDDB);
     this._db = name;
   }
 
-  collection(name: string) {
+  collection(name: string): Collection {
     if (this._collectionDict[name]) {
       return this._collectionDict[name];
     } else {
@@ -24,8 +23,19 @@ export class ScoopaBase {
     }
   }
 
+  deleteCollection(instanceName: string) {
+    const instance = LocalForage.createInstance(
+      this._getInstanceMetaData(instanceName)
+    );
+    if (this._collectionDict[instanceName]) {
+      delete this._collectionDict[instanceName];
+    }
+    instance.dropInstance();
+  }
+
   private _getInstanceMetaData(name: string) {
     return {
+      driver: LocalForage.INDEXEDDB,
       name: this._db,
       storeName: name,
     } as InstanceMetaData;

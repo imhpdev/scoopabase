@@ -8,10 +8,10 @@ export interface CollectionDictionary {
 }
 
 interface IScoopaDocument {
-  value: any;
+  data: any;
 }
 
 export interface ScoopaDocument extends IScoopaDocument {
   key: string;
-  value: any;
+  data: any;
 }

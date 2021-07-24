@@ -4,141 +4,258 @@ A Firestore-Style Databse... Offline! Live Updates on Document change.
 
 ScoopaBase gives you an offline database with simplicity & power of Firestore, And It stores data in user's browser - IndexDB.
 
-ScoopaBase is build on top of [LocalForage](https://github.com/localForage/localForage).
+ScoopaBase is build on top of 
+[LocalForage](https://github.com/localForage/localForage).
+[RxJs](https://github.com/reactivex/rxjs).
+[Typescript](https://www.typescriptlang.org/).
+
 ## Contents
 
-- [Getting Started](#getting-started)
-  - [Installation & Initialisation](#installation--initialisation)
-    - [With a Script Tag](#with-a-script-tag)
-    - [With NPM](#with-npm)
-    - [With NuxtJS](#with-nuxtjs)
-- [Video Introduction](#video-introduction)
-- [Quick Start](#quick-start)
-- [Adding Data](#adding-data)
-  - [Add a document to a collection](#add-a-document-to-a-collection)
-  - [Update a document](#update-a-document)
-  - [Set a document (overwrite)](#set-a-document-overwrite)
-  - [Set a collection (overwrite)](#set-a-collection-overwrite)
-- [Getting Data](#getting-data)
-  - [Get a collection](#get-a-collection)
-  - [Order a collection](#order-a-collection)
-  - [Limit a collection](#limit-a-collection)
-  - [Get a document](#get-a-document)
-- [Deleting Data](#deleting-data)
-  - [Delete a document](#delete-a-document)
-  - [Delete a collection](#delete-a-collection)
-  - [Delete a database](#delete-a-database)
-- [Advanced Usage with Keys](#advanced-usage-with-keys)
-  - [Add a document & specify your own key](#add-a-document--specify-your-own-key)
-  - [Set a collection (overwrite) including keys](#set-a-collection-overwrite-including-keys)
-  - [Get, Update, Set or Delete a Document by key (instead of by document criteria)](#get-update-set-or-delete-a-document-by-key-instead-of-by-document-criteria)
-  - [Get a Collection and return the keys along with the data.](#get-a-collection-and-return-the-keys-along-with-the-data)
-- [Promises](#promises)
-  - [Add Document then do something](#add-document-then-do-something)
-  - [Update Document then do something](#update-document-then-do-something)
-  - [Set Document then do something](#set-document-then-do-something)
-  - [Delete Document then do something](#delete-document-then-do-something)
-  - [Delete Collection then do something](#delete-collection-then-do-something)
-  - [Delete Database then do something](#delete-database-then-do-something)
-- [Async / Await](#async--await)
-  - [Add Documents (with Async Await)](#add-documents-with-async-await)
-  - [Update Document (with Async Await)](#update-document-with-async-await)
-  - [Set Document (with Async Await)](#set-document-with-async-await)
-  - [Get Collection & Catch Errors (with Async Await)](#get-collection--catch-errors-with-async-await)
-- [Configuration](#configuration)
-  - [Disable the Gorgeous Logs](#disable-the-gorgeous-logs)
-- [Localbase Playground](#localbase-playground)
+- [ScoopaBase](#scoopabase)
+  - [Contents](#contents)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+  - [Quick Start](#quick-start)
+  - [Adding Data](#adding-data)
+    - [Add a document to a Collection](#add-a-document-to-a-collection)
+    - [Overwrite a document](#overwrite-a-document)
+  - [Getting Data](#getting-data)
+    - [Get a Collection Observable](#get-a-collection-observable)
+    - [Get a Document Observable](#get-a-document-observable)
+    - [Get a Document Promise](#get-a-document-promise)
+  - [Deleting Data](#deleting-data)
+    - [Delete a document](#delete-a-document)
+    - [Delete a collection](#delete-a-collection)
+  - [Advanced Usage with Operators](#advanced-usage-with-operators)
+    - [OrderBy](#orderby)
+    - [Limit](#limit)
+    - [Where](#where)
 
-TSDX scaffolds your new library inside `/src`.
+## Getting Started
 
-To run TSDX, use:
+### Installation
 
-```bash
-npm start # or yarn start
+```
+npm install localbase --save
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+```javascript
+import ScoopaBase from 'scoopabase'
 
-To do a one-off build, use `npm run build` or `yarn build`.
-
-To run tests, use `npm test` or `yarn test`.
-
-## Configuration
-
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
-
-### Jest
-
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-### Bundle Analysis
-
-[`size-limit`](https://github.com/ai/size-limit) is set up to calculate the real cost of your library with `npm run size` and visualize the bundle with `npm run analyze`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
+let db = new ScoopaBase('db')
 ```
 
-### Rollup
+## Quick Start
 
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
+Getting started by adding a new document into a collection. Just call `collection` method on `db` object and pass a `collection-name` as an argument. then specify a document you want to add with th `add` method.
 
-### TypeScript
-
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
-}
+```javascript
+db.collection('users').add({
+  id: 1,
+  name: 'imhpdev',
+  age: 150
+}, 'key')
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+Now your document has been added to the collection. Now let's retrive it. 
 
-## Module Formats
+```javascript
+db
+  .collection('users')
+  .get('key')
+  .then((value) => {...});
 
-CJS, ESModules, and UMD module formats are supported.
+// { id: 2, name: 'Paul', age: 34 }
+```
 
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
+## Adding Data
 
-## Named Exports
+### Add a document to a Collection
 
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
+Add a document without a key
 
-## Including Styles
+```javascript
+db.collection('users').add({
+  id: 1,
+  name: 'imhpdev',
+  age: 150
+})
+```
+Add a document with user-defined key
 
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
+```javascript
+db.collection('users').add({
+  id: 1,
+  name: 'imhpdev',
+  age: 150
+}, 'key')
+```
 
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
+### Overwrite a document
 
-## Publishing to NPM
+```javascript
+this.db.
+  collection('users').
+  update({ newKey: 'ohoooo!' },
+   'key')
+```
 
-We recommend using [np](https://github.com/sindresorhus/np).
+## Getting Data
+
+### Get a Collection Observable
+
+Get all items Observable from a collection.
+
+```javascript
+db.collection('users').getCollection$().subscribe(data => {...})
+
+//  [
+//    { id: 1, name: 'Bill', age: 47 },
+//    { id: 2, name: 'Paul', age: 34 }
+//  ]
+```
+Get all items with keys Observable from a collection.
+
+```javascript
+db.collection('users').getCollectionWithKey$().subscribe(data => {...})
+
+//  [
+//   { key: 'key', data: { id: 1, name: 'Bill', age: 47 }},
+//   { key: 'key', data: { id: 2, name: 'Paul', age: 34 },}
+//  ]
+```
+
+### Get a Document Observable
+
+Get an individual document from a collection
+
+```javascript
+db
+  .collection('users')
+  .get$('key')
+  .subscribe((value) => {...});
+
+// { id: 2, name: 'Paul', age: 34 }
+```
+
+### Get a Document Promise
+
+Get an individual document from a collection
+
+```javascript
+db
+  .collection('users')
+  .get('key')
+  .then((value) => {...});
+
+// { id: 2, name: 'Paul', age: 34 }
+```
+
+## Deleting Data
+
+### Delete a document
+Delete a document from a collection.
+```javascript
+db.collection('users').deleteDocument('key')
+```
+
+### Delete a collection
+Delete a collection and all documents contained in it.
+```javascript
+db.deleteCollection('collection-name')
+```
+
+## Advanced Usage with Operators
+
+ScoopaBase provides some operators to work with collection observable.
+
+### OrderBy
+
+`orderby` operator will allow to order a collection on any key value. 
+
+```javascript
+db
+  .collection('user')
+  .getCollection$()
+  .pipe(orderby('age'))
+  .subscribe(() => {...})
+
+//  [
+//    { id: 2, name: 'Paul', age: 34 }
+//    { id: 1, name: 'Bill', age: 47 },
+//  ]
+```
+
+`orderby` will work on even nested key. If the nested key does not exist in a docment then it will filter-out those documents and it will be not included in a filtered list.
+
+```javascript
+db
+  .collection('user')
+  .getCollection$()
+  .pipe(orderby('name.fname'))
+  .subscribe(() => {...})
+
+//  [
+//    { id: 2, name: { fname: 'Paul', lname: 'Costa'}, age: 34 }
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
+### Limit
+
+`limit` operator will limit the number of documents comming from a Collection.
+
+```javascript
+db
+  .collection('user')
+  .getCollection$()
+  .pipe(limit(1))
+  .subscribe(() => {...})
+
+//  [
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
+### Where
+
+`where` operater will filter-out documents in a collection based on a condition. This operator allows to query data on based on operator it supports. 
+`where` queries data based on `<`, `<=`, `==`, `>=`, `>`, `includes`.
+
+`<`, `<=`, `==`, `>=`, `>` works on `string`, `number`, etc... types.
+
+```javascript
+db
+  .collection('user')
+  .getCollection$()
+  .pipe(where('name.age','>',40))
+  .subscribe(() => {...})
+
+//  [
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
+`includes` works on Array types.
+
+```javascript
+db
+  .collection('user')
+  .getCollection$()
+  .pipe(where('colors','includes',red))
+  .subscribe(() => {...})
+
+// Collection Data
+//  [
+//    { id: 1, colors: ['blue', 'green', 'red'], type: 'type A' },
+//    { id: 2, colors: ['blue', 'green'], type: 'type B' },
+//    { id: 3, colors: ['blue', ,'red'], type: 'type C' },
+//  ] 
+
+// Collection Data After Where Applied
+//  [
+//    { id: 1, colors: ['blue', 'green', 'red'], type: 'type A' },
+//    { id: 3, colors: ['blue', ,'red'], type: 'type C' },
+//  ] 
+```
+

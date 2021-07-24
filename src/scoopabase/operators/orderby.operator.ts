@@ -22,11 +22,17 @@ function _filterArray(
   key: string,
   orderBy: string
 ): Array<ScoopaDocument> {
-  const temp = array.filter(obj => isKeyExist(obj.value, key));
+  const temp = array.filter(obj =>
+    obj.data ? isKeyExist(obj.data, key) : isKeyExist(obj, key)
+  );
   const newArr: ScoopaDocument[] = temp.sort(
     (objA: ScoopaDocument, objB: ScoopaDocument) => {
-      const valueA = getKeyValue(objA.value, key);
-      const valueB = getKeyValue(objB.value, key);
+      const valueA = objA.data
+        ? getKeyValue(objA.data, key)
+        : getKeyValue(objA, key);
+      const valueB = objB.data
+        ? getKeyValue(objB.data, key)
+        : getKeyValue(objB, key);
 
       return valueA.toString() - valueB.toString();
     }

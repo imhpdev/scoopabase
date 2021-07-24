@@ -1,12 +1,53 @@
-# TSDX User Guide
+# ScoopaBase
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+A Firestore-Style Databse... Offline! Live Updates on Document change.
 
-> This TSDX setup is meant for developing libraries (not apps!) that can be published to NPM. If you’re looking to build a Node app, you could use `ts-node-dev`, plain `ts-node`, or simple `tsc`.
+ScoopaBase gives you an offline database with simplicity & power of Firestore, And It stores data in user's browser - IndexDB.
 
-> If you’re new to TypeScript, checkout [this handy cheatsheet](https://devhints.io/typescript)
+ScoopaBase is build on top of [LocalForage](https://github.com/localForage/localForage).
+## Contents
 
-## Commands
+- [Getting Started](#getting-started)
+  - [Installation & Initialisation](#installation--initialisation)
+    - [With a Script Tag](#with-a-script-tag)
+    - [With NPM](#with-npm)
+    - [With NuxtJS](#with-nuxtjs)
+- [Video Introduction](#video-introduction)
+- [Quick Start](#quick-start)
+- [Adding Data](#adding-data)
+  - [Add a document to a collection](#add-a-document-to-a-collection)
+  - [Update a document](#update-a-document)
+  - [Set a document (overwrite)](#set-a-document-overwrite)
+  - [Set a collection (overwrite)](#set-a-collection-overwrite)
+- [Getting Data](#getting-data)
+  - [Get a collection](#get-a-collection)
+  - [Order a collection](#order-a-collection)
+  - [Limit a collection](#limit-a-collection)
+  - [Get a document](#get-a-document)
+- [Deleting Data](#deleting-data)
+  - [Delete a document](#delete-a-document)
+  - [Delete a collection](#delete-a-collection)
+  - [Delete a database](#delete-a-database)
+- [Advanced Usage with Keys](#advanced-usage-with-keys)
+  - [Add a document & specify your own key](#add-a-document--specify-your-own-key)
+  - [Set a collection (overwrite) including keys](#set-a-collection-overwrite-including-keys)
+  - [Get, Update, Set or Delete a Document by key (instead of by document criteria)](#get-update-set-or-delete-a-document-by-key-instead-of-by-document-criteria)
+  - [Get a Collection and return the keys along with the data.](#get-a-collection-and-return-the-keys-along-with-the-data)
+- [Promises](#promises)
+  - [Add Document then do something](#add-document-then-do-something)
+  - [Update Document then do something](#update-document-then-do-something)
+  - [Set Document then do something](#set-document-then-do-something)
+  - [Delete Document then do something](#delete-document-then-do-something)
+  - [Delete Collection then do something](#delete-collection-then-do-something)
+  - [Delete Database then do something](#delete-database-then-do-something)
+- [Async / Await](#async--await)
+  - [Add Documents (with Async Await)](#add-documents-with-async-await)
+  - [Update Document (with Async Await)](#update-document-with-async-await)
+  - [Set Document (with Async Await)](#set-document-with-async-await)
+  - [Get Collection & Catch Errors (with Async Await)](#get-collection--catch-errors-with-async-await)
+- [Configuration](#configuration)
+  - [Disable the Gorgeous Logs](#disable-the-gorgeous-logs)
+- [Localbase Playground](#localbase-playground)
 
 TSDX scaffolds your new library inside `/src`.
 

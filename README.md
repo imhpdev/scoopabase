@@ -23,13 +23,15 @@ ScoopaBase is build on top of
     - [Get a Collection Observable](#get-a-collection-observable)
     - [Get a Document Observable](#get-a-document-observable)
     - [Get a Document Promise](#get-a-document-promise)
-  - [Deleting Data](#deleting-data)
-    - [Delete a document](#delete-a-document)
-    - [Delete a collection](#delete-a-collection)
   - [Advanced Usage with Operators](#advanced-usage-with-operators)
     - [OrderBy](#orderby)
     - [Limit](#limit)
     - [Where](#where)
+  - [Deleting Data, Collection and Database](#deleting-data-collection-and-database)
+    - [Delete a document](#delete-a-document)
+    - [Clear Collection](#clear-collection)
+    - [Delete a collection](#delete-a-collection)
+  
 
 ## Getting Started
 
@@ -107,7 +109,7 @@ this.db.
 Get all items Observable from a collection.
 
 ```javascript
-db.collection('users').getCollection$().subscribe(data => {...})
+db.collection('users').documents$.subscribe(data => {...})
 
 //  [
 //    { id: 1, name: 'Bill', age: 47 },
@@ -117,7 +119,7 @@ db.collection('users').getCollection$().subscribe(data => {...})
 Get all items with keys Observable from a collection.
 
 ```javascript
-db.collection('users').getCollectionWithKey$().subscribe(data => {...})
+db.collection('users').documentsWithKey$.subscribe(data => {...})
 
 //  [
 //   { key: 'key', data: { id: 1, name: 'Bill', age: 47 }},
@@ -132,7 +134,7 @@ Get an individual document from a collection
 ```javascript
 db
   .collection('users')
-  .get$('key')
+  .document$('key')
   .subscribe((value) => {...});
 
 // { id: 2, name: 'Paul', age: 34 }
@@ -150,21 +152,6 @@ db
 
 // { id: 2, name: 'Paul', age: 34 }
 ```
-
-## Deleting Data
-
-### Delete a document
-Delete a document from a collection.
-```javascript
-db.collection('users').deleteDocument('key')
-```
-
-### Delete a collection
-Delete a collection and all documents contained in it.
-```javascript
-db.deleteCollection('collection-name')
-```
-
 ## Advanced Usage with Operators
 
 ScoopaBase provides some operators to work with collection observable.
@@ -176,7 +163,7 @@ ScoopaBase provides some operators to work with collection observable.
 ```javascript
 db
   .collection('user')
-  .getCollection$()
+  .documents$
   .pipe(orderby('age'))
   .subscribe(() => {...})
 
@@ -191,7 +178,7 @@ db
 ```javascript
 db
   .collection('user')
-  .getCollection$()
+  .documents$
   .pipe(orderby('name.fname'))
   .subscribe(() => {...})
 
@@ -208,7 +195,7 @@ db
 ```javascript
 db
   .collection('user')
-  .getCollection$()
+  .documents$
   .pipe(limit(1))
   .subscribe(() => {...})
 
@@ -227,7 +214,7 @@ db
 ```javascript
 db
   .collection('user')
-  .getCollection$()
+  .documents$
   .pipe(where('name.age','>',40))
   .subscribe(() => {...})
 
@@ -241,7 +228,7 @@ db
 ```javascript
 db
   .collection('user')
-  .getCollection$()
+  .documents$
   .pipe(where('colors','includes',red))
   .subscribe(() => {...})
 
@@ -259,3 +246,21 @@ db
 //  ] 
 ```
 
+## Deleting Data, Collection and Database
+
+### Delete a document
+Delete a document from a collection.
+```javascript
+db.collection('users').deleteDocument('key').then(() => {...})
+```
+
+### Clear Collection
+Delete all documents from a collection.
+```javascript
+db.collection('users').clearAll().then(() => {...})
+```
+### Delete a collection
+Delete a collection and all documents contained in it.
+```javascript
+db.deleteCollection('collection-name')
+```

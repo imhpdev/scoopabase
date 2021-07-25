@@ -30,5 +30,5 @@ function _filterCollection(
       .map(obj => obj.key)
       .reverse()
       .indexOf(lastDocumentKey) + 1;
-  return array.splice(startIndex);
+  return array.reverse().splice(startIndex);
 }

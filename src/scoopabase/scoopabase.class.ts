@@ -51,6 +51,19 @@ export class ScoopaBase {
   }
 
   /**
+   * Delete all collections in database
+   * @returns Boolean to check if database is deleted or not
+   */
+  deleteDatabase(): boolean {
+    Object.keys(this._collectionDict).forEach(key => {
+      this.deleteCollection(key).then(() => (this._collectionDict[key] = null));
+    });
+    return Object.keys(this._collectionDict).every(
+      key => this._collectionDict[key] === null
+    );
+  }
+
+  /**
    *
    * @param name Collection Name
    * @returns Meta data to dreate a Localforage instance for this DB.

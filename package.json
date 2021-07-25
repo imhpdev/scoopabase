@@ -57,5 +57,25 @@
     "localforage": "^1.9.0",
     "rxjs": "^6.5.4",
     "uuid": "^8.3.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imhpdev/scoopabase.git"
+  },
+  "keywords": [
+    "database",
+    "offline",
+    "firebase",
+    "firestore",
+    "indexeddb",
+    "typescript",
+    "rxjs",
+    "documents",
+    "collection",
+    "localforage"
+  ],
+  "bugs": {
+    "url": "https://github.com/imhpdev/scoopabase/issues"
+  },
+  "homepage": "https://github.com/imhpdev/scoopabase#readme"
 }

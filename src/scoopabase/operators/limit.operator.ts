@@ -1,5 +1,10 @@
 import { Observable } from 'rxjs';
 
+/**
+ * RxJs operator to limit ScoopaBase collection documents.
+ * @param limit Number of document to limit
+ * @returns Observable with limited documents mentioned in an argument.
+ */
 export const limit = <T>(limit: number) => {
   return (source: Observable<T>) =>
     new Observable(subscriber => {

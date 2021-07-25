@@ -2,6 +2,12 @@ import { Observable } from 'rxjs';
 import { ScoopaDocument } from '../scoopabase.interface';
 import { getKeyValue, isKeyExist } from '../utils';
 
+/**
+ * RxJs operator to order data based on key for ScoopaBase documents in collection.
+ * @param key Key on which OrderBy is going to perform
+ * @param orderBy Type `ASC` - ascending order OR `DESC` - descending order
+ * @returns RxJs Obseravble with ordered data
+ */
 export const orderby = <T>(key: string, orderBy = 'asc') => {
   return (source: Observable<T>) =>
     new Observable(subscriber => {

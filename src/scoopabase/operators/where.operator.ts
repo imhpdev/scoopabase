@@ -4,6 +4,13 @@ import { getKeyValue } from '../utils';
 
 type WhrOpertor = '<' | '<=' | '==' | '>=' | '>' | 'includes';
 
+/**
+ * RxJs operator to query data in ScoopaBase Collection documents.
+ * @param key On which the comparision operation will performed
+ * @param operator what kind of comparison is going to performed.
+ * @param compareTo With what value, the key value is going to compared
+ * @returns RxJs observable with filtered result.
+ */
 export const where = <T>(key: string, operator: WhrOpertor, compareTo: any) => {
   return (source: Observable<T>) =>
     new Observable(subscriber => {

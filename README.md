@@ -27,10 +27,13 @@ ScoopaBase is build on top of
     - [OrderBy](#orderby)
     - [Limit](#limit)
     - [Where](#where)
+    - [StartAfter](#startafter)
+    - [StartBefore](#startbefore)
   - [Deleting Data, Collection and Database](#deleting-data-collection-and-database)
     - [Delete a document](#delete-a-document)
     - [Clear Collection](#clear-collection)
     - [Delete a collection](#delete-a-collection)
+    - [Delete Database](#delete-database)
   
 
 ## Getting Started
@@ -93,6 +96,19 @@ db.collection('users').add({
 }, 'key')
 ```
 
+Add multiple documents at once in a Collection.
+
+```javascript
+db.collection('users').addDocuments([
+  {...},
+  {...},
+  {...},
+  {...},
+  {...},
+  {...}
+], 'key')
+```
+
 ### Overwrite a document
 
 ```javascript
@@ -106,7 +122,7 @@ this.db.
 
 ### Get a Collection Observable
 
-Get all items Observable from a collection.
+Get all documents Observable from a collection with it's associate `key`.
 
 ```javascript
 db.collection('users').documents$.subscribe(data => {...})
@@ -114,16 +130,6 @@ db.collection('users').documents$.subscribe(data => {...})
 //  [
 //    { id: 1, name: 'Bill', age: 47 },
 //    { id: 2, name: 'Paul', age: 34 }
-//  ]
-```
-Get all items with keys Observable from a collection.
-
-```javascript
-db.collection('users').documentsWithKey$.subscribe(data => {...})
-
-//  [
-//   { key: 'key', data: { id: 1, name: 'Bill', age: 47 }},
-//   { key: 'key', data: { id: 2, name: 'Paul', age: 34 },}
 //  ]
 ```
 
@@ -246,6 +252,47 @@ db
 //  ] 
 ```
 
+### StartAfter
+
+`startAfter` operator will emit later documents from a document key specified in it's argument.
+This operator combines with `limit` operator create pagination effect on a collection.
+
+```javascript
+db
+  .collection('user')
+  .documents$
+  .pipe(
+    startAfter('documentKey')
+    limit(1)
+  )
+  .subscribe(() => {...})
+
+//  [
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
+
+### StartBefore
+
+`startBefore` operator will emit before documents from a document key specified in it's argument.
+This operator combines with `limit` operator create pagination effect on a collection.
+
+```javascript
+db
+  .collection('user')
+  .documents$
+  .pipe(
+    startBefore('documentKey')
+    limit(1)
+  )
+  .subscribe(() => {...})
+
+//  [
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
 ## Deleting Data, Collection and Database
 
 ### Delete a document
@@ -263,4 +310,10 @@ db.collection('users').clearAll().then(() => {...})
 Delete a collection and all documents contained in it.
 ```javascript
 db.deleteCollection('collection-name')
+```
+
+### Delete Database
+Delete whole database and it's all collection.
+```javascript
+db.deleteDatabase()
 ```

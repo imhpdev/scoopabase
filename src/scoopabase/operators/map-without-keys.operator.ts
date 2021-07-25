@@ -1,6 +1,10 @@
 import { Observable } from 'rxjs';
 import { ScoopaDocument } from '../scoopabase.interface';
 
+/**
+ * @deprecated
+ * @returns collection without key
+ */
 export const mapWithoutKeys = <T>() => {
   return (source: Observable<T>) =>
     new Observable<ScoopaDocument[]>(subscriber => {

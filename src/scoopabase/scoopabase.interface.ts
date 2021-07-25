@@ -7,11 +7,10 @@ export interface CollectionDictionary {
   [key: string]: any;
 }
 
-interface IScoopaDocument {
-  data: any;
+export interface IScoopaDocument {
+  key: string;
 }
 
 export interface ScoopaDocument extends IScoopaDocument {
-  key: string;
-  data: any;
+  [key: string]: any;
 }

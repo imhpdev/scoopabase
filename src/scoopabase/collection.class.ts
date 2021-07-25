@@ -1,6 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { mapWithoutKeys } from './operators/map-without-keys.operator';
 import { ScoopaDocument } from './scoopabase.interface';
 import { generateUUID, isNotEmpty } from './utils';
 
@@ -17,18 +16,11 @@ export class Collection {
   private _store$ = this._storeSubject.asObservable().pipe(filter(isNotEmpty));
 
   /**
-   * Observable to get all Documents in a Collection
+   * Observable to get all Documents in a Collection with associate key
    * returns Array of All documents
    * ex: [{...},{...},{...}]
    */
-  documents$ = this._store$.pipe(mapWithoutKeys());
-
-  /**
-   * Observable to get all Documents in a Collection with associate Key
-   * returns Array of All documents with it's associate Key
-   * ex: [{ key: 'test', data: {...} }]
-   */
-  documentsWithKey$ = this._store$;
+  documents$ = this._store$.pipe();
 
   /**
    * Observable of a ocument
@@ -69,6 +61,14 @@ export class Collection {
         return new Promise((res, _) => res(value));
       })
       .catch((err: any) => new Promise((_, rej) => rej(err)));
+  }
+
+  /**
+   * To store multiple documents in Collection at once.
+   * @param documents Array of documents to store in a collection
+   */
+  addDocuments(documents: Array<any>) {
+    documents.forEach(document => this.add(document));
   }
 
   /**
@@ -132,7 +132,8 @@ export class Collection {
     const storeData: Array<ScoopaDocument> = [];
     this._store
       .iterate((value: any, key: string) => {
-        storeData.push({ data: value, key: key });
+        const data = value;
+        storeData.push({ ...data, key: key });
       })
       .then(() => {
         this._storeSubject.next(storeData);

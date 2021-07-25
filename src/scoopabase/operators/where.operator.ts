@@ -33,7 +33,7 @@ function _filterArray(
   compareTo: any
 ): ScoopaDocument[] {
   return array.filter(obj => {
-    const value = obj.data ? getKeyValue(obj.data, key) : getKeyValue(obj, key);
+    const value = getKeyValue(obj, key);
     if (value) {
       switch (operator) {
         case '<':

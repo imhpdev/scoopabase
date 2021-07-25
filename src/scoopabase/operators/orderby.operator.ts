@@ -33,12 +33,8 @@ function _filterArray(
   );
   const newArr: ScoopaDocument[] = temp.sort(
     (objA: ScoopaDocument, objB: ScoopaDocument) => {
-      const valueA = objA.data
-        ? getKeyValue(objA.data, key)
-        : getKeyValue(objA, key);
-      const valueB = objB.data
-        ? getKeyValue(objB.data, key)
-        : getKeyValue(objB, key);
+      const valueA = getKeyValue(objA, key);
+      const valueB = getKeyValue(objB, key);
 
       return valueA.toString() - valueB.toString();
     }

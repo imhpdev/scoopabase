@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { ScoopaDocument } from './scoopabase.interface';
+import { ScoopaDocument, PromiseResponse } from './scoopabase.interface';
 import { generateUUID, isNotEmpty } from './utils';
 
 export class Collection {
@@ -8,6 +8,7 @@ export class Collection {
    * Backbone of a collection.
    */
   private _store!: any;
+  private _storeDocuments!: ScoopaDocument[];
 
   /**
    * Subject to store data of collection. which is updated and emit whole collection documents everytime when CRUD operation happpens.
@@ -53,14 +54,21 @@ export class Collection {
    * @param key An optional argument for a unique identification to point JSON Object in Collection
    * @returns Prmosie
    */
-  add(value: any, key: string = generateUUID()): Promise<any> {
+  add(value: any, key: string = generateUUID()): Promise<PromiseResponse> {
     return this._store
       .setItem(key, value)
       .then((value: any) => {
         this._updated();
-        return new Promise((res, _) => res(value));
+        return new Promise((res, _) =>
+          res({ isSuccessful: true, res: value } as PromiseResponse)
+        );
       })
-      .catch((err: any) => new Promise((_, rej) => rej(err)));
+      .catch(
+        (err: any) =>
+          new Promise((_, rej) =>
+            rej({ isSuccessful: false, res: err } as PromiseResponse)
+          )
+      );
   }
 
   /**
@@ -77,14 +85,21 @@ export class Collection {
    * @param key To find JSON Object in Collection
    * @returns Promise
    */
-  update(newDocument: any, key: string): Promise<any> {
+  update(newDocument: any, key: string): Promise<PromiseResponse> {
     return this._store
       .setItem(key, newDocument)
       .then((value: any) => {
         this._updated();
-        return new Promise((res, _) => res(value));
+        return new Promise((res, _) =>
+          res({ isSuccessful: true, res: value } as PromiseResponse)
+        );
       })
-      .catch((err: any) => new Promise((_, rej) => rej(err)));
+      .catch(
+        (err: any) =>
+          new Promise((_, rej) =>
+            rej({ isSuccessful: false, res: err } as PromiseResponse)
+          )
+      );
   }
 
   /**
@@ -97,32 +112,72 @@ export class Collection {
   }
 
   /**
+   *
+   * @returns A promise with all documents in a collection or error promise
+   */
+  getAll(): Promise<PromiseResponse> {
+    return this._storeDocuments
+      ? new Promise((res, _) =>
+          res({
+            isSuccessful: false,
+            res: this._storeDocuments,
+          } as PromiseResponse)
+        )
+      : new Promise((_, rej) =>
+          rej({
+            isSuccessful: false,
+            res: 'No documents found in collection.',
+          } as PromiseResponse)
+        );
+  }
+
+  /**
    * Delete a specific document
    * @param key To find JSON Object in Collection
    * @returns Promise
    */
-  delete(key: string): Promise<any> {
+  delete(key: string): Promise<PromiseResponse> {
     return this._store
       .removeItem(key)
-      .then((value: any) => {
+      .then(() => {
         this._updated();
-        return new Promise((res, _) => res(value));
+        return new Promise((res, _) =>
+          res({
+            isSuccessful: true,
+            res: 'Selected documents has been removed from a collection',
+          } as PromiseResponse)
+        );
       })
-      .catch((err: any) => new Promise((_, rej) => rej(err)));
+      .catch(
+        (err: any) =>
+          new Promise((_, rej) =>
+            rej({ isSuccessful: false, res: err } as PromiseResponse)
+          )
+      );
   }
 
   /**
    * Delete all documents in a Collection
    * @returns Prmoise
    */
-  clearAll(): Promise<any> {
+  clearAll(): Promise<PromiseResponse> {
     return this._store
       .clear()
-      .then((value: any) => {
+      .then(() => {
         this._updated();
-        return new Promise((res, _) => res(value));
+        return new Promise((res, _) =>
+          res({
+            isSuccessful: true,
+            res: 'All documents has been cleared from a collection',
+          } as PromiseResponse)
+        );
       })
-      .catch((err: any) => new Promise((_, rej) => rej(err)));
+      .catch(
+        (err: any) =>
+          new Promise((_, rej) =>
+            rej({ isSuccessful: false, res: err } as PromiseResponse)
+          )
+      );
   }
 
   /**
@@ -136,7 +191,8 @@ export class Collection {
         storeData.push({ ...data, key: key });
       })
       .then(() => {
-        this._storeSubject.next(storeData);
+        this._storeDocuments = storeData;
+        this._storeSubject.next(this._storeDocuments);
       })
       .catch(() => {
         console.log('Error While Iterating through Collection...');

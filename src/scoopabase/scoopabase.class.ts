@@ -58,9 +58,14 @@ export class ScoopaBase {
     Object.keys(this._collectionDict).forEach(key => {
       this.deleteCollection(key).then(() => (this._collectionDict[key] = null));
     });
-    return Object.keys(this._collectionDict).every(
+    const isClear = Object.keys(this._collectionDict).every(
       key => this._collectionDict[key] === null
     );
+    if (isClear) {
+      this._collectionDict = {};
+      return true;
+    }
+    return false;
   }
 
   /**

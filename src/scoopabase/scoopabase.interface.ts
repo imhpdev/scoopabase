@@ -14,3 +14,8 @@ export interface IScoopaDocument {
 export interface ScoopaDocument extends IScoopaDocument {
   [key: string]: any;
 }
+
+export interface PromiseResponse {
+  isSuccessful: boolean;
+  res: string | object;
+}

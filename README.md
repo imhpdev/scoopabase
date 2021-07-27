@@ -41,7 +41,7 @@ ScoopaBase is build on top of
 ### Installation
 
 ```
-npm install localbase --save
+npm install scoopabase --save
 ```
 
 ```javascript

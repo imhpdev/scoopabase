@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { ScoopaDocument } from '../scoopabase.interface';
 import { getKeyValue } from '../utils';
 
-type WhrOpertor = '<' | '<=' | '==' | '>=' | '>' | 'includes';
+type WhrOpertor = '<' | '<=' | '==' | '>=' | '>' | 'includes' | 'contains';
 
 /**
  * RxJs operator to query data in ScoopaBase Collection documents.
@@ -47,6 +47,11 @@ function _filterArray(
         case '>':
           return value > compareTo;
         case 'includes':
+          if (typeof value === 'string') {
+            return value.toLocaleLowerCase().includes(compareTo);
+          }
+          return false;
+        case 'contains':
           if (Array.isArray(value)) {
             return value.includes(compareTo);
           } else {

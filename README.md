@@ -41,7 +41,7 @@ ScoopaBase is build on top of
 ### Installation
 
 ```
-npm install localbase --save
+npm install scoopabase --save
 ```
 
 ```javascript
@@ -213,7 +213,7 @@ db
 ### Where
 
 `where` operater will filter-out documents in a collection based on a condition. This operator allows to query data on based on operator it supports. 
-`where` queries data based on `<`, `<=`, `==`, `>=`, `>`, `includes`.
+`where` queries data based on `<`, `<=`, `==`, `>=`, `>`, `includes`, `contains`.
 
 `<`, `<=`, `==`, `>=`, `>` works on `string`, `number`, etc... types.
 
@@ -229,13 +229,13 @@ db
 //  ]  
 ```
 
-`includes` works on Array types.
+`contains` works on Array types.
 
 ```javascript
 db
   .collection('user')
   .documents$
-  .pipe(where('colors','includes',red))
+  .pipe(where('colors','contains',red))
   .subscribe(() => {...})
 
 // Collection Data

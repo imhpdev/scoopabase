@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ScoopaDocument } from '../scoopabase.interface';
+import { Document } from '../scoopabase.interface';
 import { getKeyValue } from '../utils';
 
 type WhrOpertor = '<' | '<=' | '==' | '>=' | '>' | 'includes' | 'contains';
@@ -12,8 +12,8 @@ type WhrOpertor = '<' | '<=' | '==' | '>=' | '>' | 'includes' | 'contains';
  * @returns RxJs observable with filtered result.
  */
 export const where = <T>(key: string, operator: WhrOpertor, compareTo: any) => {
-  return (source: Observable<T>) =>
-    new Observable(subscriber => {
+  return (source: Observable<Document<T>[]>) =>
+    new Observable<Document<T>[]>(subscriber => {
       return source.subscribe({
         next: v => {
           if (Array.isArray(v)) {
@@ -26,12 +26,12 @@ export const where = <T>(key: string, operator: WhrOpertor, compareTo: any) => {
     });
 };
 
-function _filterArray(
-  array: Array<ScoopaDocument>,
+function _filterArray<T>(
+  array: Array<Document<T>>,
   key: string,
   operator: WhrOpertor,
   compareTo: any
-): ScoopaDocument[] {
+): Document<T>[] {
   return array.filter(obj => {
     const value = getKeyValue(obj, key);
     if (value) {
@@ -48,7 +48,9 @@ function _filterArray(
           return value > compareTo;
         case 'includes':
           if (typeof value === 'string') {
-            return value.toLocaleLowerCase().includes(compareTo);
+            return value
+              .toLocaleLowerCase()
+              .includes(compareTo.toLocaleLowerCase());
           }
           return false;
         case 'contains':

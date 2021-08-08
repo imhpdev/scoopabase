@@ -1,19 +1,19 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { ScoopaDocument, PromiseResponse } from './scoopabase.interface';
+import { Document, PromiseResponse } from './scoopabase.interface';
 import { generateUUID, isNotEmpty } from './utils';
 
-export class Collection {
+export class Collection<T> {
   /**
    * Backbone of a collection.
    */
   private _store!: any;
-  private _storeDocuments!: ScoopaDocument[];
+  private _storeDocuments!: Document<T>[];
 
   /**
    * Subject to store data of collection. which is updated and emit whole collection documents everytime when CRUD operation happpens.
    */
-  private _storeSubject = new BehaviorSubject<Array<ScoopaDocument>>([]);
+  private _storeSubject = new BehaviorSubject<Array<Document<T>>>([]);
   private _store$ = this._storeSubject.asObservable().pipe(filter(isNotEmpty));
 
   /**
@@ -21,7 +21,7 @@ export class Collection {
    * returns Array of All documents
    * ex: [{...},{...},{...}]
    */
-  documents$ = this._store$.pipe();
+  documents$: Observable<Document<T>[]> = this._store$.pipe();
 
   /**
    * Observable of a ocument
@@ -30,7 +30,7 @@ export class Collection {
    */
   document$ = (key: string) =>
     this._store$.pipe(
-      map((objects: ScoopaDocument[]) => objects.find(obj => obj.key === key))
+      map((objects: Document<T>[]) => objects.find(obj => obj.key === key))
     );
 
   /**
@@ -54,19 +54,22 @@ export class Collection {
    * @param key An optional argument for a unique identification to point JSON Object in Collection
    * @returns Prmosie
    */
-  add(value: any, key: string = generateUUID()): Promise<PromiseResponse> {
+  add<T>(value: T, key: string = generateUUID()): Promise<PromiseResponse<T>> {
     return this._store
       .setItem(key, value)
-      .then((value: any) => {
+      .then((value: Document<T>) => {
         this._updated();
         return new Promise((res, _) =>
-          res({ isSuccessful: true, res: value } as PromiseResponse)
+          res({
+            isSuccessful: true,
+            res: { ...value, key: key },
+          } as PromiseResponse<T>)
         );
       })
       .catch(
         (err: any) =>
           new Promise((_, rej) =>
-            rej({ isSuccessful: false, res: err } as PromiseResponse)
+            rej({ isSuccessful: false, res: err } as PromiseResponse<T>)
           )
       );
   }
@@ -75,7 +78,7 @@ export class Collection {
    * To store multiple documents in Collection at once.
    * @param documents Array of documents to store in a collection
    */
-  addDocuments(documents: Array<any>) {
+  addDocuments(documents: Array<T>) {
     documents.forEach(document => this.add(document));
   }
 
@@ -85,19 +88,22 @@ export class Collection {
    * @param key To find JSON Object in Collection
    * @returns Promise
    */
-  update(newDocument: any, key: string): Promise<PromiseResponse> {
+  update<T>(newDocument: T, key: string): Promise<PromiseResponse<T>> {
     return this._store
       .setItem(key, newDocument)
-      .then((value: any) => {
+      .then((value: Document<T>) => {
         this._updated();
         return new Promise((res, _) =>
-          res({ isSuccessful: true, res: value } as PromiseResponse)
+          res({
+            isSuccessful: true,
+            res: { ...value, key: key },
+          } as PromiseResponse<T>)
         );
       })
       .catch(
         (err: any) =>
           new Promise((_, rej) =>
-            rej({ isSuccessful: false, res: err } as PromiseResponse)
+            rej({ isSuccessful: false, res: err } as PromiseResponse<T>)
           )
       );
   }
@@ -115,19 +121,19 @@ export class Collection {
    *
    * @returns A promise with all documents in a collection or error promise
    */
-  getAll(): Promise<PromiseResponse> {
+  getAll(): Promise<any> {
     return this._storeDocuments
       ? new Promise((res, _) =>
           res({
-            isSuccessful: false,
+            isSuccessful: true,
             res: this._storeDocuments,
-          } as PromiseResponse)
+          })
         )
       : new Promise((_, rej) =>
           rej({
             isSuccessful: false,
             res: 'No documents found in collection.',
-          } as PromiseResponse)
+          })
         );
   }
 
@@ -136,7 +142,7 @@ export class Collection {
    * @param key To find JSON Object in Collection
    * @returns Promise
    */
-  delete(key: string): Promise<PromiseResponse> {
+  delete<T>(key: string): Promise<PromiseResponse<T>> {
     return this._store
       .removeItem(key)
       .then(() => {
@@ -145,13 +151,13 @@ export class Collection {
           res({
             isSuccessful: true,
             res: 'Selected documents has been removed from a collection',
-          } as PromiseResponse)
+          } as PromiseResponse<T>)
         );
       })
       .catch(
         (err: any) =>
           new Promise((_, rej) =>
-            rej({ isSuccessful: false, res: err } as PromiseResponse)
+            rej({ isSuccessful: false, res: err } as PromiseResponse<T>)
           )
       );
   }
@@ -160,7 +166,7 @@ export class Collection {
    * Delete all documents in a Collection
    * @returns Prmoise
    */
-  clearAll(): Promise<PromiseResponse> {
+  clearAll(): Promise<PromiseResponse<T>> {
     return this._store
       .clear()
       .then(() => {
@@ -169,13 +175,13 @@ export class Collection {
           res({
             isSuccessful: true,
             res: 'All documents has been cleared from a collection',
-          } as PromiseResponse)
+          } as PromiseResponse<T>)
         );
       })
       .catch(
         (err: any) =>
           new Promise((_, rej) =>
-            rej({ isSuccessful: false, res: err } as PromiseResponse)
+            rej({ isSuccessful: false, res: err } as PromiseResponse<T>)
           )
       );
   }
@@ -184,9 +190,9 @@ export class Collection {
    * Iterates a Collection everytime when CRUD operation happens in a Collection
    */
   private _iterateStore(): void {
-    const storeData: Array<ScoopaDocument> = [];
+    const storeData: Document<T>[] = [];
     this._store
-      .iterate((value: any, key: string) => {
+      .iterate((value: T, key: string) => {
         const data = value;
         storeData.push({ ...data, key: key });
       })

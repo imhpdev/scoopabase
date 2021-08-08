@@ -18,14 +18,14 @@ export class ScoopaBase {
    * @param name Name of a collection to create/access in a DB
    * @returns retuens Instance of Collection Class, on which all CRUD operations happen
    */
-  collection(name: string): Collection {
+  collection<T>(name: string): Collection<T> {
     if (this._collectionDict[name]) {
       return this._collectionDict[name];
     } else {
       const instance = LocalForage.createInstance(
         this._getInstanceMetaData(name)
       );
-      const collectionInstance = new Collection(instance);
+      const collectionInstance = new Collection<T>(instance);
       this._collectionDict[name] = collectionInstance;
       return collectionInstance;
     }

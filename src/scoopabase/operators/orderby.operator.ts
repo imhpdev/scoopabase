@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ScoopaDocument } from '../scoopabase.interface';
+import { Document } from '../scoopabase.interface';
 import { getKeyValue, isKeyExist } from '../utils';
 
 /**
@@ -9,8 +9,8 @@ import { getKeyValue, isKeyExist } from '../utils';
  * @returns RxJs Obseravble with ordered data
  */
 export const orderby = <T>(key: string, orderBy = 'asc') => {
-  return (source: Observable<T>) =>
-    new Observable(subscriber => {
+  return (source: Observable<Document<T>[]>) =>
+    new Observable<Document<T>[]>(subscriber => {
       return source.subscribe({
         next: v => {
           if (Array.isArray(v)) {
@@ -23,16 +23,16 @@ export const orderby = <T>(key: string, orderBy = 'asc') => {
     });
 };
 
-function _filterArray(
-  array: Array<ScoopaDocument>,
+function _filterArray<T>(
+  array: Array<Document<T>>,
   key: string,
   orderBy: string
-): Array<ScoopaDocument> {
+): Array<Document<T>> {
   const temp = array.filter(obj =>
-    obj.data ? isKeyExist(obj.data, key) : isKeyExist(obj, key)
+    obj ? isKeyExist(obj, key) : isKeyExist(obj, key)
   );
-  const newArr: ScoopaDocument[] = temp.sort(
-    (objA: ScoopaDocument, objB: ScoopaDocument) => {
+  const newArr: Document<T>[] = temp.sort(
+    (objA: Document<T>, objB: Document<T>) => {
       const valueA = getKeyValue(objA, key);
       const valueB = getKeyValue(objB, key);
 

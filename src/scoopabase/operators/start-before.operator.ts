@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ScoopaDocument } from '../scoopabase.interface';
+import { Document } from '../scoopabase.interface';
 
 /**
  * RxJs operator to start a result from specific point in ScoopaBase collection documents.
@@ -7,8 +7,8 @@ import { ScoopaDocument } from '../scoopabase.interface';
  * @returns Observable with limited documents mentioned in an argument.
  */
 export const startBefore = <T>(lastDocumentKey: string) => {
-  return (source: Observable<T>) =>
-    new Observable(subscriber => {
+  return (source: Observable<Document<T>[]>) =>
+    new Observable<Document<T>[]>(subscriber => {
       return source.subscribe({
         next: v => {
           if (Array.isArray(v)) {
@@ -21,10 +21,10 @@ export const startBefore = <T>(lastDocumentKey: string) => {
     });
 };
 
-function _filterCollection(
-  array: Array<ScoopaDocument>,
+function _filterCollection<T>(
+  array: Array<Document<T>>,
   lastDocumentKey: string
-) {
+): Array<Document<T>> {
   const startIndex =
     array
       .map(obj => obj.key)

@@ -45,7 +45,7 @@ npm install scoopabase --save
 ```
 
 ```javascript
-import ScoopaBase from 'scoopabase'
+import { ScoopaBase } from 'scoopabase'
 
 let db = new ScoopaBase('db')
 ```

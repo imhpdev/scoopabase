@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Document, PromiseResponse } from './scoopabase.interface';
-import { generateUUID, isNotEmpty } from './utils';
+import { generateUUID } from './utils';
 
 export class Collection<T> {
   /**
@@ -14,7 +14,7 @@ export class Collection<T> {
    * Subject to store data of collection. which is updated and emit whole collection documents everytime when CRUD operation happpens.
    */
   private _storeSubject = new BehaviorSubject<Array<Document<T>>>([]);
-  private _store$ = this._storeSubject.asObservable().pipe(filter(isNotEmpty));
+  private _store$ = this._storeSubject.asObservable().pipe();
 
   /**
    * Observable to get all Documents in a Collection with associate key

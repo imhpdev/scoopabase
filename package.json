@@ -47,6 +47,7 @@
   "devDependencies": {
     "@size-limit/preset-small-lib": "^5.0.1",
     "husky": "^7.0.1",
+    "rxjs": "^6.6.0",
     "size-limit": "^5.0.1",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.0",
@@ -55,7 +56,6 @@
   "dependencies": {
     "@types/uuid": "^8.3.1",
     "localforage": "^1.9.0",
-    "rxjs": "^6.5.4",
     "uuid": "^8.3.2"
   },
   "repository": {

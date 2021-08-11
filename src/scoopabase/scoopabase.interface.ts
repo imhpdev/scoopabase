@@ -7,11 +7,7 @@ export interface CollectionDictionary {
   [key: string]: any;
 }
 
-export type Document<T> = {
-  [P in keyof T]: T[P];
-} & { key: string };
-
 export interface PromiseResponse<T> {
   isSuccessful: boolean;
-  res: string | Document<T> | Array<Document<T>>;
+  res: string | (T & { key: string }) | (T & { key: string })[];
 }

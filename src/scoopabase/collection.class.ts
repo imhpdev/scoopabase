@@ -1,6 +1,6 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Document, PromiseResponse } from './scoopabase.interface';
+import { PromiseResponse } from './scoopabase.interface';
 import { generateUUID } from './utils';
 
 export class Collection<T> {
@@ -8,20 +8,20 @@ export class Collection<T> {
    * Backbone of a collection.
    */
   private _store!: any;
-  private _storeDocuments!: Document<T>[];
+  private _storeDocuments!: Array<T & { key: string }>;
 
   /**
    * Subject to store data of collection. which is updated and emit whole collection documents everytime when CRUD operation happpens.
    */
-  private _storeSubject = new BehaviorSubject<Array<Document<T>>>([]);
-  private _store$ = this._storeSubject.asObservable().pipe();
+  private _storeSubject = new BehaviorSubject<Array<T & { key: string }>>([]);
+  private _store$ = this._storeSubject.asObservable();
 
   /**
    * Observable to get all Documents in a Collection with associate key
    * returns Array of All documents
    * ex: [{...},{...},{...}]
    */
-  documents$: Observable<Document<T>[]> = this._store$.pipe();
+  documents$ = this._store$.pipe();
 
   /**
    * Observable of a ocument
@@ -29,9 +29,7 @@ export class Collection<T> {
    * @returns Observable of a Documents.
    */
   document$ = (key: string) =>
-    this._store$.pipe(
-      map((objects: Document<T>[]) => objects.find(obj => obj.key === key))
-    );
+    this._store$.pipe(map(objects => objects.find(obj => obj.key === key)));
 
   /**
    * @param instance Take instance of a LocalForage from a ScoopaBase class
@@ -57,7 +55,7 @@ export class Collection<T> {
   add<T>(value: T, key: string = generateUUID()): Promise<PromiseResponse<T>> {
     return this._store
       .setItem(key, value)
-      .then((value: Document<T>) => {
+      .then((value: T) => {
         this._updated();
         return new Promise((res, _) =>
           res({
@@ -91,7 +89,7 @@ export class Collection<T> {
   update<T>(newDocument: T, key: string): Promise<PromiseResponse<T>> {
     return this._store
       .setItem(key, newDocument)
-      .then((value: Document<T>) => {
+      .then((value: T) => {
         this._updated();
         return new Promise((res, _) =>
           res({
@@ -190,7 +188,7 @@ export class Collection<T> {
    * Iterates a Collection everytime when CRUD operation happens in a Collection
    */
   private _iterateStore(): void {
-    const storeData: Document<T>[] = [];
+    const storeData: Array<T & { key: string }> = [];
     this._store
       .iterate((value: T, key: string) => {
         const data = value;

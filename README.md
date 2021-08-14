@@ -26,6 +26,7 @@ ScoopaBase is build on top of
   - [Advanced Usage with Operators](#advanced-usage-with-operators)
     - [OrderBy](#orderby)
     - [Limit](#limit)
+    - [scoopaFilter](#scoopaFilter)
     - [Where](#where)
     - [StartAfter](#startafter)
     - [StartBefore](#startbefore)
@@ -203,6 +204,24 @@ db
   .collection('user')
   .documents$
   .pipe(limit(1))
+  .subscribe(() => {...})
+
+//  [
+//    { id: 1, name: { fname: 'Zendeya', lname: 'Bouch'}, age: 47 },
+//  ]  
+```
+
+### scoopaFilter
+
+`scoopaFilter` operater will filter-out documents in a collection based on a condition. This operator allows to filter data based on your filter function.
+`scoopaFilter` requires a `key` on which a filter is going to apply it works on nested key as well. And a `filter function` which
+will getting applied on a key that mentioned in first argument.
+
+```javascript
+db
+  .collection('user')
+  .documents$
+  .pipe(scoopaFilter('age', (age) => age > 40))
   .subscribe(() => {...})
 
 //  [
